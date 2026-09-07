@@ -458,7 +458,7 @@ Parameters of the Hill model.
 
 ## Requirements
 
-Recommended:
+Python version:
 
 ```text
 Python 3.10+
@@ -479,7 +479,7 @@ Windows PowerShell:
 
 ```powershell
 py -m venv .venv
-.venv\Scripts\Activate.ps1
+.venv\Scripts\activate.bat
 ```
 
 Install the Python dependencies:
@@ -658,34 +658,7 @@ The simulation has been tested with activation steps and shows the expected coup
 
 ---
 
-# 14. Planned Work
-
-The current simulator is intended to serve as a foundation for experiments involving:
-
-```text
-parameter identification
-model validation
-sensitivity analysis
-position control
-comparison of identification methods
-comparison of model accuracy vs. control performance
-```
-
-A possible research direction is to investigate whether improvements in parameter identification and open-loop model accuracy translate into improvements in closed-loop control performance.
-
-Potential identification approaches include:
-
-```text
-classical numerical optimization
-evolutionary / genetic optimization
-physics-informed machine learning
-```
-
-The final research question and experimental comparison are still under development.
-
----
-
-# 15. Important Implementation Notes
+# 14. Important Implementation Notes
 
 This project is a **minimal independent Python implementation inspired by and ported from the open-source PAM software**, rather than a direct installation of the complete `pam_mujoco` framework.
 
