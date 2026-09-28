@@ -471,6 +471,7 @@ class HillPAM:
 
         return force
 
+# Legacy function - for testing only
 def create_default_hill_pam(
     a_init=0.01,
     l_mtc_change_init=0.0,
@@ -518,7 +519,8 @@ def create_default_hill_pam(
         length=0.68,
     )
 
-def create_hill_pam_from_json(
+# This function doesnt allow variable values
+def create_hill_pam_from_json_old(
     path,
     a_init=0.01,
     l_mtc_change_init=0.0,
@@ -553,6 +555,95 @@ def create_hill_pam_from_json(
 
     sde = SerialDampingElement(
         ce,
+        d_se=sd["d_se"],
+        r_se=sd["r_se"],
+    )
+
+    see = SerialElasticElement(
+        l_0=se["l"],
+        delta_u_nll=se["delta_u_nll"],
+        delta_u_l=se["delta_u_l"],
+        delta_f=se["delta_f"],
+    )
+
+    return HillPAM(
+        contractile_element=ce,
+        parallel_elastic=pee,
+        serial_damping=sde,
+        serial_elastic=see,
+        a_init=a_init,
+        l_mtc_change_init=l_mtc_change_init,
+        length=params["length"],
+    )
+
+def create_hill_pam_from_json(
+    path,
+    a_init=0.01,
+    l_mtc_change_init=0.0,
+    overrides=None,
+):
+    with open(path, "r") as f:
+        params = json.load(f)
+
+    if overrides is None:
+        overrides = {}
+
+    c = params["contractile"].copy()
+    p = params["parallel_elastic"].copy()
+    sd = params["serial_damping"].copy()
+    se = params["serial_elastic"].copy()
+
+    # ---------------------------------------------------------
+    # Override parameters for experiments
+    # ---------------------------------------------------------
+
+    if "f_max" in overrides:
+        c["f_max"] = overrides["f_max"]
+
+    if "l_CEopt" in overrides:
+        c["l_CEopt"] = overrides["l_CEopt"]
+
+    if "a_rel0" in overrides:
+        c["a_rel0"] = overrides["a_rel0"]
+
+    if "b_rel0" in overrides:
+        c["b_rel0"] = overrides["b_rel0"]
+
+    if "d_se" in overrides:
+        sd["d_se"] = overrides["d_se"]
+
+    if "r_se" in overrides:
+        sd["r_se"] = overrides["r_se"]
+
+    if "delta_f" in overrides:
+        se["delta_f"] = overrides["delta_f"]
+
+    # ---------------------------------------------------------
+    # Build model
+    # ---------------------------------------------------------
+
+    ce = ContractileElement(
+        f_max=c["f_max"],
+        l_ce_opt=c["l_CEopt"],
+        delta_w_limb_desc=c["delta_w_limb_desc"],
+        delta_w_limb_asc=c["delta_w_limb_asc"],
+        limb_desc=c["limb_desc"],
+        limb_asc=c["limb_asc"],
+        a_rel0=c["a_rel0"],
+        b_rel0=c["b_rel0"],
+        s_eccentric=c["s_eccentric"],
+        c_eccentric=c["c_eccentric"],
+    )
+
+    pee = ParallelElasticElement(
+        contractile_element=ce,
+        L=p["L"],
+        v=p["v"],
+        F=p["F"],
+    )
+
+    sde = SerialDampingElement(
+        contractile_element=ce,
         d_se=sd["d_se"],
         r_se=sd["r_se"],
     )
