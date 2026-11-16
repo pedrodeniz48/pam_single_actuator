@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 RESULTS_PATH = ROOT / "results" / "mass_load_test"
 RESULTS_PATH.mkdir(parents=True, exist_ok=True)
+print("Output directory:", RESULTS_PATH.resolve())
 
 
 # ============================================================
@@ -221,6 +222,18 @@ print(
     f"{critical_vel:.2f} kg"
 )
 
+# Representative masses for time-series plots
+REPRESENTATIVE_MASSES = [11, 12, 13, 14, 15]
+
+# Grayscale-friendly styles
+LINE_STYLES = {
+    11: ("#0072B2", "-", "o"),
+    12: ("#E69F00", "--", "s"),
+    13: ("#009E73", "-.", "^"),
+    14: ("#CC79A7", ":", "D"),
+    15: ("#D55E00", "-", "x"),
+}
+
 # ============================================================
 # GRAPH 1
 # Mass vs maximum tendon contraction
@@ -231,6 +244,7 @@ fig1 = plt.figure()
 plt.plot(
     summary_df["mass"],
     summary_df["max_contraction"],
+    color="black",
     marker="o",
     markersize=4,
 )
@@ -248,8 +262,7 @@ plt.grid(True)
 plt.tight_layout()
 
 fig1.savefig(
-    RESULTS_PATH
-    / "mass_vs_max_contraction.png",
+    RESULTS_PATH / "mass_vs_max_contrac.png",
     dpi=300,
 )
 
@@ -264,6 +277,7 @@ fig2 = plt.figure()
 plt.plot(
     summary_df["mass"],
     summary_df["max_tendon_velocity"],
+    color="black",
     marker="o",
     markersize=4,
 )
@@ -281,11 +295,9 @@ plt.grid(True)
 plt.tight_layout()
 
 fig2.savefig(
-    RESULTS_PATH
-    / "mass_vs_max_velocity.png",
+    RESULTS_PATH / "mass_vs_max_velocity.png",
     dpi=300,
 )
-
 
 # ============================================================
 # GRAPH 3
@@ -297,9 +309,24 @@ fig3 = plt.figure()
 
 for mass, df in all_runs.items():
 
+    if not any(
+        np.isclose(mass, target)
+        for target in REPRESENTATIVE_MASSES
+    ):
+        continue
+
+    mass_key = int(round(mass))
+    color, linestyle, marker = LINE_STYLES[mass_key]
+
     plt.plot(
         df["time"],
         df["tendon_contraction"],
+        color=color,
+        linestyle=linestyle,
+        marker=marker,
+        markevery=150,
+        markersize=4,
+        linewidth=1.5,
         label=f"{mass:.0f} kg",
     )
 
@@ -327,11 +354,9 @@ plt.legend(
 plt.tight_layout()
 
 fig3.savefig(
-    RESULTS_PATH
-    / "contraction_time_series.png",
+    RESULTS_PATH / "contraction_time_series.png",
     dpi=300,
 )
-
 
 # ============================================================
 # GRAPH 4
@@ -343,9 +368,24 @@ fig4 = plt.figure()
 
 for mass, df in all_runs.items():
 
+    if not any(
+        np.isclose(mass, target)
+        for target in REPRESENTATIVE_MASSES
+    ):
+        continue
+
+    mass_key = int(round(mass))
+    color, linestyle, marker = LINE_STYLES[mass_key]
+
     plt.plot(
         df["time"],
         df["tendon_velocity"],
+        color=color,
+        linestyle=linestyle,
+        marker=marker,
+        markevery=150,
+        markersize=4,
+        linewidth=1.5,
         label=f"{mass:.0f} kg",
     )
 
@@ -373,10 +413,14 @@ plt.legend(
 plt.tight_layout()
 
 fig4.savefig(
-    RESULTS_PATH
-    / "velocity_time_series.png",
+    RESULTS_PATH / "velocity_time_series.png",
     dpi=300,
 )
+
+print("\nGenerated PNG files:")
+
+for file in RESULTS_PATH.glob("*.png"):
+    print(file.name)
 
 
 # ============================================================
