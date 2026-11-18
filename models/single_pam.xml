@@ -2,10 +2,19 @@
 
     <option timestep="0.002" gravity="0 0 -9.81"/>
 
+    <visual>
+        <headlight ambient="0.6 0.6 0.6" diffuse="0.8 0.8 0.8" specular="0.1 0.1 0.1"/>
+    </visual>
+
+    <asset>
+        <texture type="skybox" builtin="gradient" rgb1="0.75 0.88 1.0"
+                 rgb2="0.95 0.98 1.0" width="256" height="1536"/>
+    </asset>
+
     <worldbody>
 
         <geom
-            name="floor"
+            name="floor" rgba="0.9 0.9 0.9 1"
             type="plane"
             size="2 2 0.1"
         />
@@ -15,7 +24,7 @@
 
             <geom
                 type="box"
-                size="0.12 0.12 0.03"
+                size="0.12 0.12 0.03" rgba="0.35 0.35 0.35 1"
             />
 
             <site
@@ -41,7 +50,7 @@
             <geom
                 type="box"
                 size="0.07 0.07 0.07"
-                mass="1.0"
+                mass="1.0" rgba="0.15 0.45 0.85 1"
             />
 
             <site
@@ -56,7 +65,7 @@
 
     <tendon>
 
-        <spatial name="pam_tendon">
+        <spatial name="pam_tendon" rgba="0.9 0.2 0.1 1" width="0.003">
             <site site="pam_origin"/>
             <site site="pam_insertion"/>
         </spatial>

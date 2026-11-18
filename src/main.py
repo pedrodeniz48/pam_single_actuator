@@ -59,6 +59,17 @@ print(
 
 with mujoco.viewer.launch_passive(model, data) as viewer:
 
+    
+    # ADDED: Initial camera position
+    viewer.cam.lookat[:] = [0.0, 0.0, 1.0]
+    viewer.cam.distance = 1.2
+    viewer.cam.azimuth = 90
+    viewer.cam.elevation = 0
+
+    # IMPORTANT: force viewer to update the camera
+    viewer.sync()
+
+
     while viewer.is_running():
 
         tendon_length = data.sensordata[length_adr]
